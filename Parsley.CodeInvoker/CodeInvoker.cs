@@ -1,13 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text;
 
 namespace Parsely.CodeInvoker;
 
@@ -77,76 +72,4 @@ public static class CodeInvoker
 
         return method.Invoke(instance, parameters);
     }
-}
-
-public static class FileUtility
-{
-    public static string? GetFullFileName(string fileName, int parentLevel)
-    {
-        var directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        if (directoryName is null)
-            return null;
-
-        var parentDirectory = new DirectoryInfo(directoryName);
-        for (int level = 0; level < parentLevel; level++) {
-            if (parentDirectory.Parent is null)
-                break;
-            parentDirectory = parentDirectory.Parent;
-        }
-
-        var files = Directory.GetFiles(parentDirectory.FullName, fileName, SearchOption.AllDirectories);
-        return files.Length == 0 ? null : files[0];
-    }
-
-    public static string ReadLinesStartHead(string fileName, string head, Encoding encoding)
-        => string.Join("\n", Read(fileName, head, encoding));
-
-    static IEnumerable<string> Read(string fileName, string head, Encoding encoding)
-    {
-        var headLength = head.Length;
-        return Read(fileName, encoding).Select(行 => 行.Trim()).Where(行 => 行.StartsWith(head)).Select(行 => 行.Remove(0, headLength));
-    }
-
-    static IEnumerable<string> Read(string fileName, Encoding encoding)
-    {
-        using var stream = new StreamReader(fileName, encoding);
-        string? line;
-        while ((line = stream.ReadLine()) != null)
-            yield return line;
-    }
-}
-
-public class SpecialCodeInvoker
-{
-    Assembly? assemblyCache = null;
-
-    public SpecialCodeInvoker(string sorceFileName, Encoding encoding, string head, IEnumerable<MetadataReference>? references, int parentLevel)
-        =>  Initialize(sorceFileName, encoding,head, references, parentLevel);
-
-    public SpecialCodeInvoker(string sorceFileName, Encoding encoding, string head, Assembly caller, int parentLevel)
-    {
-        IEnumerable<MetadataReference> references = caller.GetReferencedAssemblies()
-                                                          .Select(assembluName => Assembly.Load(assembluName))
-                                                          .Select(assemply => MetadataReference.CreateFromFile(assemply.Location))
-                                                          .Concat(new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) });
-
-        Initialize(sorceFileName, encoding, head, references, parentLevel);
-    }
-
-    void Initialize(string sorceFileName, Encoding encoding, string head, IEnumerable<MetadataReference>? references, int parentLevel)
-    {
-        if (assemblyCache is null) {
-            var fileFullName = FileUtility.GetFullFileName(sorceFileName, parentLevel);
-            if (fileFullName != null) {
-                var code = FileUtility.ReadLinesStartHead(fileFullName, head, encoding);
-                assemblyCache = CodeInvoker.CodeToAssembly(code, references);
-            }
-        }
-    }
-
-    public object? StaticInvoke(string typeName, string methodName, object[] parameters)
-        => assemblyCache is null ? null : CodeInvoker.StaticInvoke(assemblyCache, typeName, methodName, parameters);
-
-    public object? InstanceInvoke(string typeName, string methodName, object[] parameters)
-        => assemblyCache is null ? null : CodeInvoker.InstanceInvoke(assemblyCache, typeName, methodName, parameters);
 }
