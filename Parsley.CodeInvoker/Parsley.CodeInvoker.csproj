@@ -4,10 +4,31 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <RootNamespace>Parsely.CodeInvoker</RootNamespace>
+	  <AssemblyName>Parsely.CodeInvoker</AssemblyName>
+	  <Copyright>Copyright © 2023 Parsley Kojima</Copyright>
+	  <Version>0.1.0.0</Version>
+	  <Description>
+		  C# Source Code Invoker Library (.NET Library)
+	  </Description>
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageProjectUrl>https://github.com/ParsleyKojima/Parsley.CodeInvoker</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/ParsleyKojima/Parsley.CodeInvoker</RepositoryUrl>
+	  <AssemblyVersion>0.1.0.0</AssemblyVersion>
+	  <FileVersion>0.1.0.0</FileVersion>
+	  <PackageTags></PackageTags>
+	  <NeutralLanguage>en</NeutralLanguage>
+	  <Authors>Parsley Kojima</Authors>
+	  <Company></Company>
+	  <PackageLicenseUrl></PackageLicenseUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
+
 
 </Project>

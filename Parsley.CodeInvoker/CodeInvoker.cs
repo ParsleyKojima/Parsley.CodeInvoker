@@ -14,7 +14,7 @@ namespace Parsely.CodeInvoker;
 // dotnet add package Microsoft.CodeAnalysis.CSharp --version 4.4.0
 public static class CodeInvoker
 {
-    public static Assembly CodeToAssembly(string csharpCode, IEnumerable<MetadataReference>? references = null)
+    public static Assembly? CodeToAssembly(string csharpCode, IEnumerable<MetadataReference>? references = null)
     {
         var fileName = Guid.NewGuid().ToString();
 
@@ -123,7 +123,7 @@ public class SpecialCodeInvoker
     public SpecialCodeInvoker(string sorceFileName, Encoding encoding, string head, IEnumerable<MetadataReference>? references, int parentLevel)
         =>  Initialize(sorceFileName, encoding,head, references, parentLevel);
 
-    public SpecialCodeInvoker(string sorceFileName, Encoding encoding, string head, Assembly? caller, int parentLevel)
+    public SpecialCodeInvoker(string sorceFileName, Encoding encoding, string head, Assembly caller, int parentLevel)
     {
         IEnumerable<MetadataReference> references = caller.GetReferencedAssemblies()
                                                           .Select(assembluName => Assembly.Load(assembluName))
